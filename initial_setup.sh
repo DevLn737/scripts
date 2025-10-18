@@ -26,32 +26,24 @@ setup_iptables() {
 # Сброс правил
 iptables -F
 iptables -X
-iptables -t nat -F
-iptables -t nat -X
-
 # Политики по умолчанию
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
 iptables -P OUTPUT ACCEPT
 # Разрешаем loopback
 iptables -A INPUT -i lo -j ACCEPT
-
 # Разрешаем установленные соединения
 iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-
 # Разрешаем SSH
 iptables -A INPUT -p tcp --dport $SSH_PORT -j ACCEPT
-
 # Разрешаем Zabbix
 #iptables -A INPUT -p tcp --dport 10050 -j ACCEPT
-
 # Разрешаем HTTP/HTTPS
 #iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 #iptables -A INPUT -p tcp --dport 443 -j ACCEPT
-
-# Разрешаем ICMP с ограничением
+# Запрещаем ICMP (ping)
+#iptables -A INPUT -p icmp -j DROP
 iptables -A INPUT -p icmp -m limit --limit 1/second -j ACCEPT
-
 # Сохраняем правила
 sudo netfilter-persistent save
 EOF
